@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>iOS自动化打包脚本</title>
+    <link href="/2022/08/20/iOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E8%84%9A%E6%9C%AC/"/>
+    <url>/2022/08/20/iOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E8%84%9A%E6%9C%AC/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>闲来无事学习一下shell</p></blockquote><h4 id="打包xcframework"><a href="#打包xcframework" class="headerlink" title="打包xcframework"></a>打包xcframework</h4><ul><li>由于xcode13的模拟器也包含arm64架构，移除模拟器arm64架构，<code>build Setting</code>&#x3D;&gt;<code>Excluded Architectures</code>&#x3D;&gt;勾选<code>Any ios simulator sdk</code> 添加<code>arm64</code> 也可在脚本中设置-arch</li></ul><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">#!/bin/bash</span><br>set -e<br>set -u<br>set -o pipefail<br><br>SCHEME_NAME=sdk<br>WORKSPACE_NAME=sdk<br><span class="hljs-comment">#打包环境</span><br>CONFIGURATION=Release<br>ROOT_PATH=$(pwd)<br><span class="hljs-comment">#输出路径</span><br>EXPORT_PATH=<span class="hljs-variable">$&#123;ROOT_PATH&#125;</span>/archive<br><br><br><span class="hljs-comment">#chech scheme</span><br>xcodebuild -list || <span class="hljs-keyword">exit</span> <span class="hljs-number">0</span><br><br><span class="hljs-comment">#clean</span><br><span class="hljs-keyword">function</span> arch_clean &#123;<br>    xcodebuild clean \<br>    -workspace <span class="hljs-variable">$&#123;WORKSPACE_NAME&#125;</span>.xcworkspace \<br>    -scheme <span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span> \<br>    -configuration <span class="hljs-variable">$&#123;CONFIGURATION&#125;</span><br>&#125;<br><br><span class="hljs-comment">#下面iphonesimulator15.5 可根据 xcodebuild -showsdks查看</span><br> <span class="hljs-comment"># #打包模拟器</span><br><span class="hljs-keyword">function</span> archive_simulator &#123;<br>     xcodebuild archive \<br>     -workspace <span class="hljs-variable">$&#123;WORKSPACE_NAME&#125;</span>.xcworkspace \<br>     -scheme <span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span> \<br>     -destination=<span class="hljs-string">&quot;iOS Simulator&quot;</span> \<br>     -sdk iphonesimulator15.<span class="hljs-number">5</span> \ <br>     -configuration <span class="hljs-variable">$&#123;CONFIGURATION&#125;</span> \<br>     SKIP_INSTALL=NO \<br>     BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \<br>     -archivePath <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span>/ios_simulator.xcarchive<br> &#125;<br><br><span class="hljs-keyword">function</span> archive_iosDevice &#123;<br>     xcodebuild archive \<br>     -workspace <span class="hljs-variable">$&#123;WORKSPACE_NAME&#125;</span>.xcworkspace \<br>     -scheme <span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span> \<br>    -sdk iphoneos \<br>     -destination=<span class="hljs-string">&quot;iOS&quot;</span> \<br>     -configuration <span class="hljs-variable">$&#123;CONFIGURATION&#125;</span> \<br>     SKIP_INSTALL=NO \<br>     BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \<br>     -archivePath <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span>/ios_device.xcarchive<br> &#125;<br><br> <span class="hljs-comment"># #创建xcframework</span><br> <span class="hljs-keyword">function</span> create_xcframework &#123;<br>     xcodebuild -create-xcframework \<br>     -framework <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span><span class="hljs-regexp">/ios_device.xcarchive/</span>Products<span class="hljs-regexp">/Library/</span>Frameworks/<span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span>.framework \<br>     -framework <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span><span class="hljs-regexp">/ios_simulator.xcarchive/</span>Products<span class="hljs-regexp">/Library/</span>Frameworks/<span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span>.framework \<br>     -output <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span>/<span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span>.xcframework<br> &#125;<br><br><br> arch_clean || <span class="hljs-keyword">exit</span> <span class="hljs-number">0</span><br> archive_simulator || <span class="hljs-keyword">exit</span> <span class="hljs-number">0</span><br><br> <span class="hljs-keyword">if</span> [[ -e <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span>/ios_simulator.xcarchive ]] ;then<br>     echo -e <span class="hljs-string">&quot;\033[1135m🍺🍺🍺🍺🍺🍺xcarchive ios_simulator success!🍺🍺🍺🍺🍺🍺 \033[0m&quot;</span><br> <span class="hljs-keyword">else</span><br>     echo -e <span class="hljs-string">&quot;\033[1135m❌❌❌❌❌❌xcarchive ios_simulator fail!❌❌❌❌❌❌ \033[0m&quot;</span><br> fi<br><br>archive_iosDevice || <span class="hljs-keyword">exit</span> <span class="hljs-number">0</span><br><br><span class="hljs-keyword">if</span> [[ -e <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span>/ios_device.xcarchive ]] ;then<br>     echo -e <span class="hljs-string">&quot;\033[1135m🍺🍺🍺🍺🍺🍺xcarchiveios_device success!🍺🍺🍺🍺🍺🍺 \033[0m&quot;</span><br> <span class="hljs-keyword">else</span><br>     echo -e <span class="hljs-string">&quot;\033[1135m❌❌❌❌❌❌xcarchive ios_device fail!❌❌❌❌❌❌ \033[0m&quot;</span><br> fi<br><br> cd <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span> <br> create_xcframework || <span class="hljs-keyword">exit</span> <span class="hljs-number">0</span><br> <span class="hljs-keyword">if</span> [[ -e <span class="hljs-variable">$&#123;EXPORT_PATH&#125;</span>/<span class="hljs-variable">$&#123;SCHEME_NAME&#125;</span>.xcframework ]] ;then<br>    echo -e <span class="hljs-string">&quot;\033[1135m🍺🍺🍺🍺🍺🍺create $&#123;SCHEME_NAME&#125;.xcframework success!🍺🍺🍺🍺🍺🍺 \033[0m&quot;</span><br> <span class="hljs-keyword">else</span><br>     echo -e <span class="hljs-string">&quot;\033[1135m❌❌❌❌❌❌create $&#123;SCHEME_NAME&#125;.xcframework fail!❌❌❌❌❌❌ \033[0m&quot;</span><br> fi<br><br> open .<br><br></code></pre></td></tr></table></figure><h4 id="打包ipa"><a href="#打包ipa" class="headerlink" title="打包ipa"></a>打包ipa</h4>]]></content>
+    
+    
+    <categories>
+      
+      <category>iOS</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>iOS</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>墙纸收藏</title>
     <link href="/2022/08/20/%E5%A2%99%E7%BA%B8%E6%94%B6%E8%97%8F/"/>
     <url>/2022/08/20/%E5%A2%99%E7%BA%B8%E6%94%B6%E8%97%8F/</url>
@@ -11,19 +36,18 @@
     <content type="html"><![CDATA[<ul><li><a href="https://wallpaperhub.app/">https://wallpaperhub.app/</a></li><li><a href="https://wallhaven.cc/">https://wallhaven.cc/</a></li><li><a href="https://unsplash.com/">https://unsplash.com/</a></li></ul>]]></content>
     
     
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>浅谈iOS swift库 被依赖、被嵌套</title>
-    <link href="/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/"/>
-    <url>/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/</url>
-    
-    <content type="html"><![CDATA[<h2 id="浅谈iOS-swift库-被依赖、被嵌套"><a href="#浅谈iOS-swift库-被依赖、被嵌套" class="headerlink" title="浅谈iOS swift库 被依赖、被嵌套"></a>浅谈iOS swift库 被依赖、被嵌套</h2><p>说说sdk开发中 sdk嵌套swift库&lt;或者oc、swift混编库&gt; &lt;下面以被嵌套的swift库名叫 <code>SwiftSdk.framework</code> 为例&gt;</p><h5 id="集成方集成的时候各种报错"><a href="#集成方集成的时候各种报错" class="headerlink" title="集成方集成的时候各种报错"></a>集成方集成的时候各种报错</h5><ul><li>首先就会报sdk所依赖的swift库找不到<code>Could not find or use auto-linked framework &#39;SwiftSdk&#39;</code><ul><li>解决方法1:为集成方提供<code>SwiftSdk</code> 。<ul><li>这里还会有个问题：打包<code>SwiftSdk</code>的xcode所用的swift版本不同 报错类似这种<code>Module compiled with Swift 5.5 cannot be imported by the Swift 5.5.2 compiler: </code>网上也有些解决方法，下载工具链什么的。 太麻烦， 把你的<code>SwiftSdk.framework</code>转换成xcframework 可以完美解决。</li></ul></li><li>解决方法2：不管这个<code>SwiftSdk</code>是静态还是动态，改成<code>Embed</code> 。下一步 让集成方在<code>build setting</code>-&gt;<code>Framework search Path</code>加上<code>SwiftSdk</code>的路径。 (前面改成embed后，打包的sdk里面的<code>Frameworsks</code>文件夹会有<code>SwiftSdk</code>)。若还是报错，添加<code>run search path</code>路径</li></ul></li></ul><p>如果集成方是纯oc还会有下面的报错</p><ul><li>又出现依赖的swift系统库 找不到<code>Could not find or use auto-linked framework</code><ul><li>解决方法1:集成方创建swift文件自动建立桥接</li><li>解决方法2:手动创建桥接、<code>build setting </code>–&gt; <code>Add User-Defined Setting</code> –&gt;<code>SWIFT_VERSION</code>&#x3D;5</li></ul></li></ul><p>总结：无论swift库是动态库还是静态库，只要被嵌套，在外面都出现链接错误。</p><p>另外说说 <code>Podfile</code>文件 中<code>use_frameworks!</code> 、 <code>use_modular_headers!</code> 以及 <code>:modular_headers =&gt; true</code></p><blockquote><p><code>.podspec</code> 参考 <a href="https://guides.cocoapods.org/syntax/podspec.html">https://guides.cocoapods.org/syntax/podspec.html</a> </p><p><code>.podfile</code> 参考 <a href="https://guides.cocoapods.org/syntax/podfile.html">https://guides.cocoapods.org/syntax/podfile.html</a></p></blockquote><p>在制作swift或者混编私有库的时候为<code>.podspec</code>添加<code>  s.static_framework = true</code></p><p>可以让你全局使用<code>use_frameworks!</code>  时， <code>:modular_headers =&gt; true</code>指定让你的库以静态库方式加载</p>]]></content>
+    <categories>
+      
+      <category>other</category>
+      
+    </categories>
     
     
+    <tags>
+      
+      <tag>other</tag>
+      
+    </tags>
     
   </entry>
   
@@ -37,6 +61,43 @@
     <content type="html"><![CDATA[<p>大致步骤入下:</p><ul><li>创建远程索引库、远程私有库</li><li>创建远程索引库时，最好同时初始化一个readme文件。否者后面操作会报错，解决也是需要在远程索引仓库创建一个空文件</li><li>创建本地私有库、关联远程私有库<ul><li>终端输入<code>pod lib create xxxSDK </code></li><li><code>cd xxxSDK</code></li><li><code>git remote add origin https:xxx.xxxSDK.git</code></li></ul></li><li>本地添加私有库索引<ul><li>终端输入<code>pod repo add name[索引名] source [远程索引地址]  </code> </li><li>例如：<code>pod repo add PluginPodspecs http://xxx.pluginpodspecs.git</code></li><li><code>pod repo list</code>查看</li></ul></li><li>添加本地私有库内容、修改<code>xxx.podspec</code>文件</li><li>本地校验<ul><li><code>pod lib lint --verbose --allow-warnings </code></li><li>如果私有库里有嵌套另一个私有库 在上面命令后面在加上参数<code>--sources=[索引库址],https://github.com/CocoaPods/Specs.git </code></li></ul></li><li>私有库提交到远程仓库、打tag<ul><li><code>xxx.podspec</code>文件具体可查看官方文档 <a href="https://guides.cocoapods.org/syntax/podspec.html">https://guides.cocoapods.org/syntax/podspec.html</a></li></ul></li><li>远程校验<ul><li><code>pod spec lint --allow-warnings --verbose</code></li></ul></li><li>提交本地索引到远程<ul><li><code>cd xxxSDK &amp;&amp; pod repo push [本地索引库] [索引文件名]</code>  </li><li><code>pod repo push PluginPodspecs xxxSDK.podspec --verbose --allow-warnings</code></li></ul></li></ul>]]></content>
     
     
+    <categories>
+      
+      <category>iOS</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>iOS</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>浅谈iOS swift库 被依赖、被嵌套</title>
+    <link href="/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/"/>
+    <url>/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/</url>
+    
+    <content type="html"><![CDATA[<h2 id="浅谈iOS-swift库-被依赖、被嵌套"><a href="#浅谈iOS-swift库-被依赖、被嵌套" class="headerlink" title="浅谈iOS swift库 被依赖、被嵌套"></a>浅谈iOS swift库 被依赖、被嵌套</h2><p>说说sdk开发中 sdk嵌套swift库&lt;或者oc、swift混编库&gt; &lt;下面以被嵌套的swift库名叫 <code>SwiftSdk.framework</code> 为例&gt;</p><h5 id="集成方集成的时候各种报错"><a href="#集成方集成的时候各种报错" class="headerlink" title="集成方集成的时候各种报错"></a>集成方集成的时候各种报错</h5><ul><li>首先就会报sdk所依赖的swift库找不到<code>Could not find or use auto-linked framework &#39;SwiftSdk&#39;</code><ul><li>解决方法1:为集成方提供<code>SwiftSdk</code> 。<ul><li>这里还会有个问题：打包<code>SwiftSdk</code>的xcode所用的swift版本不同 报错类似这种<code>Module compiled with Swift 5.5 cannot be imported by the Swift 5.5.2 compiler: </code>网上也有些解决方法，下载工具链什么的。 太麻烦， 把你的<code>SwiftSdk.framework</code>转换成xcframework 可以完美解决。</li></ul></li><li>解决方法2：不管这个<code>SwiftSdk</code>是静态还是动态，改成<code>Embed</code> 。下一步 让集成方在<code>build setting</code>-&gt;<code>Framework search Path</code>加上<code>SwiftSdk</code>的路径。 (前面改成embed后，打包的sdk里面的<code>Frameworsks</code>文件夹会有<code>SwiftSdk</code>)。若还是报错，添加<code>run search path</code>路径</li></ul></li></ul><p>如果集成方是纯oc还会有下面的报错</p><ul><li>又出现依赖的swift系统库 找不到<code>Could not find or use auto-linked framework</code><ul><li>解决方法1:集成方创建swift文件自动建立桥接</li><li>解决方法2:手动创建桥接、<code>build setting </code>–&gt; <code>Add User-Defined Setting</code> –&gt;<code>SWIFT_VERSION</code>&#x3D;5</li></ul></li></ul><p>总结：无论swift库是动态库还是静态库，只要被嵌套，在外面都出现链接错误。</p><p>另外说说 <code>Podfile</code>文件 中<code>use_frameworks!</code> 、 <code>use_modular_headers!</code> 以及 <code>:modular_headers =&gt; true</code></p><blockquote><p><code>.podspec</code> 参考 <a href="https://guides.cocoapods.org/syntax/podspec.html">https://guides.cocoapods.org/syntax/podspec.html</a> </p><p><code>.podfile</code> 参考 <a href="https://guides.cocoapods.org/syntax/podfile.html">https://guides.cocoapods.org/syntax/podfile.html</a></p></blockquote><p>在制作swift或者混编私有库的时候为<code>.podspec</code>添加<code>  s.static_framework = true</code></p><p>可以让你全局使用<code>use_frameworks!</code>  时， <code>:modular_headers =&gt; true</code>指定让你的库以静态库方式加载</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>iOS</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>iOS</tag>
+      
+    </tags>
     
   </entry>
   

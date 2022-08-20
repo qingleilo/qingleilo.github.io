@@ -1,7 +1,8 @@
 ---
 title: iOS制作私有库
 date: 2022-08-03 10:16:00
-tags:
+tags: iOS
+categories: iOS
 ---
 
 大致步骤入下:

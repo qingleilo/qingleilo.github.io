@@ -101,4 +101,89 @@ if [[ -e ${EXPORT_PATH}/ios_device.xcarchive ]] ;then
 
 ```
 
-####  打包ipa
+####  打包ipa 
+
+把shell脚本和ExportOptions.plist一起放在根目录下，下面例子中ExportOptions.plist为ad-hoc模式。
+```
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+SCHEME_NAME=SdkApp
+WORKSPACE_NAME=sdk
+#打包环境
+CONFIGURATION=Release
+ROOT_PATH=$(pwd)
+#输出路径
+EXPORT_PATH=${ROOT_PATH}/archive
+EXPORT_IPA_PATH=${EXPORT_PATH}/ipa
+
+#chech scheme
+xcodebuild -list || exit 0
+
+#clean
+function arch_clean {
+    xcodebuild clean \
+    -workspace ${WORKSPACE_NAME}.xcworkspace \
+    -scheme ${SCHEME_NAME} \
+    -configuration ${CONFIGURATION}
+}
+
+#编译
+function archive {
+    xcodebuild archive \
+    -workspace ${WORKSPACE_NAME}.xcworkspace \
+    -scheme ${SCHEME_NAME} \
+    -configuration ${CONFIGURATION} \
+    -archivePath ${EXPORT_PATH}/${SCHEME_NAME}.xcarchive
+}
+
+#打包导出
+function arch_export {
+    xcodebuild -exportArchive \
+    -archivePath ${EXPORT_PATH}/${SCHEME_NAME}.xcarchive \
+    -exportPath ${EXPORT_IPA_PATH} \
+    -exportOptionsPlist ${ROOT_PATH}/ExportOptions.plist 
+}
+
+
+ arch_clean || exit 0
+ archive || exit 0
+
+ if [[ -e ${EXPORT_PATH}/${SCHEME_NAME}.xcarchive ]] ;then
+     echo -e "\033[1;35m🍺🍺🍺🍺🍺xcarchive success！🍺🍺 \033[0m"
+ else
+     echo -e "\033[1;35m❌❌ fail ❌❌❌❌\033[0m"
+ fi
+
+arch_export || exit 0
+
+if [[ -e ${EXPORT_IPA_PATH}/${SCHEME_NAME}.ipa ]] ;then
+     echo -e "\033[1;35m🍺🍺🍺🍺🍺xcarchive success！🍺🍺 \033[0m"
+ else
+     echo -e "\033[1;35m❌❌ fail ❌❌❌❌\033[0m"
+ fi
+
+open ${EXPORT_IPA_PATH}
+```
+ExportOptions.plist 文件<可手动打包一次后，生成>
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>destination</key>
+    <string>export</string>
+    <key>method</key>
+    <string>ad-hoc</string>
+    <key>signingStyle</key>
+    <string>automatic</string>
+    <key>stripSwiftSymbols</key>
+    <true/>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+</dict>
+</plist>
+```

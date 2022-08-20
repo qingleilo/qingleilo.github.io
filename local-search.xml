@@ -4,11 +4,37 @@
   
   
   <entry>
-    <title>Hello World</title>
-    <link href="/2022/06/21/hello-world/"/>
-    <url>/2022/06/21/hello-world/</url>
+    <title>墙纸收藏</title>
+    <link href="/2022/08/20/%E5%A2%99%E7%BA%B8%E6%94%B6%E8%97%8F/"/>
+    <url>/2022/08/20/%E5%A2%99%E7%BA%B8%E6%94%B6%E8%97%8F/</url>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<ul><li><a href="https://wallpaperhub.app/">https://wallpaperhub.app/</a></li><li><a href="https://wallhaven.cc/">https://wallhaven.cc/</a></li><li><a href="https://unsplash.com/">https://unsplash.com/</a></li></ul>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>iOS制作私有库</title>
+    <link href="/2022/08/03/iOS%E5%88%B6%E4%BD%9C%E7%A7%81%E6%9C%89%E5%BA%93/"/>
+    <url>/2022/08/03/iOS%E5%88%B6%E4%BD%9C%E7%A7%81%E6%9C%89%E5%BA%93/</url>
+    
+    <content type="html"><![CDATA[<p>大致步骤入下:</p><ul><li>创建远程索引库、远程私有库</li><li>创建远程索引库时，最好同时初始化一个readme文件。否者后面操作会报错，解决也是需要在远程索引仓库创建一个空文件</li><li>创建本地私有库、关联远程私有库<ul><li>终端输入<code>pod lib create xxxSDK </code></li><li><code>cd xxxSDK</code></li><li><code>git remote add origin https:xxx.xxxSDK.git</code></li></ul></li><li>本地添加私有库索引<ul><li>终端输入<code>pod repo add name[索引名] source [远程索引地址]  </code> </li><li>例如：<code>pod repo add PluginPodspecs http://xxx.pluginpodspecs.git</code></li><li><code>pod repo list</code>查看</li></ul></li><li>添加本地私有库内容、修改<code>xxx.podspec</code>文件</li><li>本地校验<ul><li><code>pod lib lint --verbose --allow-warnings </code></li><li>如果私有库里有嵌套另一个私有库 在上面命令后面在加上参数<code>--sources=[索引库址],https://github.com/CocoaPods/Specs.git </code></li></ul></li><li>私有库提交到远程仓库、打tag<ul><li><code>xxx.podspec</code>文件具体可查看官方文档 <a href="https://guides.cocoapods.org/syntax/podspec.html">https://guides.cocoapods.org/syntax/podspec.html</a></li></ul></li><li>远程校验<ul><li><code>pod spec lint --allow-warnings --verbose</code></li></ul></li><li>提交本地索引到远程<ul><li><code>cd xxxSDK &amp;&amp; pod repo push [本地索引库] [索引文件名]</code>  </li><li><code>pod repo push PluginPodspecs xxxSDK.podspec --verbose --allow-warnings</code></li></ul></li></ul>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>浅谈iOS swift库 被依赖、被嵌套</title>
+    <link href="/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/"/>
+    <url>/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/</url>
+    
+    <content type="html"><![CDATA[<h2 id="浅谈iOS-swift库-被依赖、被嵌套"><a href="#浅谈iOS-swift库-被依赖、被嵌套" class="headerlink" title="浅谈iOS swift库 被依赖、被嵌套"></a>浅谈iOS swift库 被依赖、被嵌套</h2><p>说说sdk开发中 sdk嵌套swift库&lt;或者oc、swift混编库&gt; &lt;下面以被嵌套的swift库名叫 <code>SwiftSdk.framework</code> 为例&gt;</p><h5 id="集成方集成的时候各种报错"><a href="#集成方集成的时候各种报错" class="headerlink" title="集成方集成的时候各种报错"></a>集成方集成的时候各种报错</h5><ul><li>首先就会报sdk所依赖的swift库找不到<code>Could not find or use auto-linked framework &#39;SwiftSdk&#39;</code><ul><li>解决方法1:为集成方提供<code>SwiftSdk</code> 。<ul><li>这里还会有个问题：打包<code>SwiftSdk</code>的xcode所用的swift版本不同 报错类似这种<code>Module compiled with Swift 5.5 cannot be imported by the Swift 5.5.2 compiler: </code>网上也有些解决方法，下载工具链什么的。 太麻烦， 把你的<code>SwiftSdk.framework</code>转换成xcframework 可以完美解决。</li></ul></li><li>解决方法2：不管这个<code>SwiftSdk</code>是静态还是动态，改成<code>Embed</code> 。下一步 让集成方在<code>build setting</code>-&gt;<code>Framework search Path</code>加上<code>SwiftSdk</code>的路径。 (前面改成embed后，打包的sdk里面的<code>Frameworsks</code>文件夹会有<code>SwiftSdk</code>)。若还是报错，添加<code>run search path</code>路径</li></ul></li></ul><p>如果集成方是纯oc还会有下面的报错</p><ul><li>又出现依赖的swift系统库 找不到<code>Could not find or use auto-linked framework</code><ul><li>解决方法1:集成方创建swift文件自动建立桥接</li><li>解决方法2:手动创建桥接、<code>build setting </code>–&gt; <code>Add User-Defined Setting</code> –&gt;<code>SWIFT_VERSION</code>&#x3D;5</li></ul></li></ul><p>总结：无论swift库是动态库还是静态库，只要被嵌套，在外面都出现链接错误。</p><p>另外说说 <code>Podfile</code>文件 中<code>use_frameworks!</code> 、 <code>use_modular_headers!</code> 以及 <code>:modular_headers =&gt; true</code></p><blockquote><p><code>.podspec</code> 参考 <a href="https://guides.cocoapods.org/syntax/podspec.html">https://guides.cocoapods.org/syntax/podspec.html</a> </p><p><code>.podfile</code> 参考 <a href="https://guides.cocoapods.org/syntax/podfile.html">https://guides.cocoapods.org/syntax/podfile.html</a></p></blockquote><p>在制作swift或者混编私有库的时候为<code>.podspec</code>添加<code>  s.static_framework = true</code></p><p>可以让你全局使用<code>use_frameworks!</code>  时， <code>:modular_headers =&gt; true</code>指定让你的库以静态库方式加载</p>]]></content>
     
     
     

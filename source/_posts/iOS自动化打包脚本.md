@@ -21,7 +21,9 @@ SCHEME_NAME=sdk
 WORKSPACE_NAME=sdk
 #打包环境
 CONFIGURATION=Release
-ROOT_PATH=$(pwd)
+
+#cd到脚本绝对路径下
+ROOT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)
 #输出路径
 EXPORT_PATH=${ROOT_PATH}/archive
 
@@ -114,7 +116,8 @@ SCHEME_NAME=SdkApp
 WORKSPACE_NAME=sdk
 #打包环境
 CONFIGURATION=Release
-ROOT_PATH=$(pwd)
+#cd到脚本绝对路径下
+ROOT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)
 #输出路径
 EXPORT_PATH=${ROOT_PATH}/archive
 EXPORT_IPA_PATH=${EXPORT_PATH}/ipa

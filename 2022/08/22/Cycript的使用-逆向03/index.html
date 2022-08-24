@@ -16,22 +16,23 @@
   <meta name="author" content="FIRF">
   <meta name="keywords" content="">
   
-    <meta name="description" content="浅谈iOS swift库 被依赖、被嵌套说说sdk开发中 sdk嵌套swift库&lt;或者oc、swift混编库&gt; &lt;下面以被嵌套的swift库名叫 SwiftSdk.framework 为例&gt; 集成方集成的时候各种报错 首先就会报sdk所依赖的swift库找不到Could not find or use auto-linked framework &#39;SwiftSdk&amp;">
+    <meta name="description" content="Cycript能干什么 Cycript可以用来探索、修改、调试正在运行的Mac&#x2F;iOS App  官网：http:&#x2F;&#x2F;www.cycript.org&#x2F; 文档：http:&#x2F;&#x2F;www.cycript.org&#x2F;manual&#x2F; 通过Cydia安装Cycript就可以使用了 Cycript开启和关闭12345678CycriptCycript -p 进程ID&#x2F;进程名称# 退出：controle +">
 <meta property="og:type" content="article">
-<meta property="og:title" content="浅谈iOS swift库 被依赖、被嵌套">
-<meta property="og:url" content="http://example.com/2022/08/03/%E6%B5%85%E8%B0%88iOS%E5%BA%93%E7%9A%84%E4%BE%9D%E8%B5%96%E3%80%81%E5%B5%8C%E5%A5%97/index.html">
+<meta property="og:title" content="Cycript的使用[逆向03]">
+<meta property="og:url" content="http://qingleilo.cn/2022/08/22/Cycript%E7%9A%84%E4%BD%BF%E7%94%A8-%E9%80%86%E5%90%9103/index.html">
 <meta property="og:site_name" content="FIRF">
-<meta property="og:description" content="浅谈iOS swift库 被依赖、被嵌套说说sdk开发中 sdk嵌套swift库&lt;或者oc、swift混编库&gt; &lt;下面以被嵌套的swift库名叫 SwiftSdk.framework 为例&gt; 集成方集成的时候各种报错 首先就会报sdk所依赖的swift库找不到Could not find or use auto-linked framework &#39;SwiftSdk&amp;">
+<meta property="og:description" content="Cycript能干什么 Cycript可以用来探索、修改、调试正在运行的Mac&#x2F;iOS App  官网：http:&#x2F;&#x2F;www.cycript.org&#x2F; 文档：http:&#x2F;&#x2F;www.cycript.org&#x2F;manual&#x2F; 通过Cydia安装Cycript就可以使用了 Cycript开启和关闭12345678CycriptCycript -p 进程ID&#x2F;进程名称# 退出：controle +">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-08-03T02:16:00.000Z">
-<meta property="article:modified_time" content="2022-08-20T09:50:12.215Z">
+<meta property="article:published_time" content="2022-08-22T02:25:13.000Z">
+<meta property="article:modified_time" content="2022-08-24T08:47:15.437Z">
 <meta property="article:author" content="FIRF">
 <meta property="article:tag" content="iOS">
+<meta property="article:tag" content="逆向">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>浅谈iOS swift库 被依赖、被嵌套 - FIRF</title>
+  <title>Cycript的使用[逆向03] - FIRF</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -73,7 +74,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"qingleilo.cn","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -200,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="浅谈iOS swift库 被依赖、被嵌套"></span>
+            <span id="subtitle" data-typed-text="Cycript的使用[逆向03]"></span>
           
         </div>
 
@@ -211,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-08-03 10:16" pubdate>
-          2022年8月3日 上午
+        <time datetime="2022-08-22 10:25" pubdate>
+          2022年8月22日 上午
         </time>
       </span>
     
@@ -223,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          550 字
         
       </span>
     
@@ -234,7 +235,7 @@
         
         
         
-          9 分钟
+          5 分钟
         
       </span>
     
@@ -272,38 +273,24 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">浅谈iOS swift库 被依赖、被嵌套</h1>
+            <h1 style="display: none">Cycript的使用[逆向03]</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="浅谈iOS-swift库-被依赖、被嵌套"><a href="#浅谈iOS-swift库-被依赖、被嵌套" class="headerlink" title="浅谈iOS swift库 被依赖、被嵌套"></a>浅谈iOS swift库 被依赖、被嵌套</h2><p>说说sdk开发中 sdk嵌套swift库&lt;或者oc、swift混编库&gt; &lt;下面以被嵌套的swift库名叫 <code>SwiftSdk.framework</code> 为例&gt;</p>
-<h5 id="集成方集成的时候各种报错"><a href="#集成方集成的时候各种报错" class="headerlink" title="集成方集成的时候各种报错"></a>集成方集成的时候各种报错</h5><ul>
-<li>首先就会报sdk所依赖的swift库找不到<code>Could not find or use auto-linked framework &#39;SwiftSdk&#39;</code><ul>
-<li>解决方法1:为集成方提供<code>SwiftSdk</code> 。<ul>
-<li>这里还会有个问题：打包<code>SwiftSdk</code>的xcode所用的swift版本不同 报错类似这种<code>Module compiled with Swift 5.5 cannot be imported by the Swift 5.5.2 compiler: </code>网上也有些解决方法，下载工具链什么的。 太麻烦， 把你的<code>SwiftSdk.framework</code>转换成xcframework 可以完美解决。</li>
-</ul>
-</li>
-<li>解决方法2：不管这个<code>SwiftSdk</code>是静态还是动态，改成<code>Embed</code> 。下一步 让集成方在<code>build setting</code>-&gt;<code>Framework search Path</code>加上<code>SwiftSdk</code>的路径。 (前面改成embed后，打包的sdk里面的<code>Frameworsks</code>文件夹会有<code>SwiftSdk</code>)。若还是报错，添加<code>run search path</code>路径</li>
-</ul>
-</li>
-</ul>
-<p>如果集成方是纯oc还会有下面的报错</p>
-<ul>
-<li>又出现依赖的swift系统库 找不到<code>Could not find or use auto-linked framework</code><ul>
-<li>解决方法1:集成方创建swift文件自动建立桥接</li>
-<li>解决方法2:手动创建桥接、<code>build setting </code>–&gt; <code>Add User-Defined Setting</code> –&gt;<code>SWIFT_VERSION</code>&#x3D;5</li>
-</ul>
-</li>
-</ul>
-<p>总结：无论swift库是动态库还是静态库，只要被嵌套，在外面都出现链接错误。</p>
-<p>另外说说 <code>Podfile</code>文件 中<code>use_frameworks!</code> 、 <code>use_modular_headers!</code> 以及 <code>:modular_headers =&gt; true</code></p>
-<blockquote>
-<p><code>.podspec</code> 参考 <a target="_blank" rel="noopener" href="https://guides.cocoapods.org/syntax/podspec.html">https://guides.cocoapods.org/syntax/podspec.html</a> </p>
-<p><code>.podfile</code> 参考 <a target="_blank" rel="noopener" href="https://guides.cocoapods.org/syntax/podfile.html">https://guides.cocoapods.org/syntax/podfile.html</a></p>
+                <h4 id="Cycript能干什么"><a href="#Cycript能干什么" class="headerlink" title="Cycript能干什么"></a>Cycript能干什么</h4><blockquote>
+<p>Cycript可以用来探索、修改、调试正在运行的Mac&#x2F;iOS App</p>
 </blockquote>
-<p>在制作swift或者混编私有库的时候为<code>.podspec</code>添加<code>  s.static_framework = true</code></p>
-<p>可以让你全局使用<code>use_frameworks!</code>  时， <code>:modular_headers =&gt; true</code>指定让你的库以静态库方式加载</p>
+<p><a target="_blank" rel="noopener" href="http://www.cycript.org/">官网：http://www.cycript.org/</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.cycript.org/manual/">文档：http://www.cycript.org/manual/</a></p>
+<p>通过Cydia安装Cycript就可以使用了</p>
+<h4 id="Cycript开启和关闭"><a href="#Cycript开启和关闭" class="headerlink" title="Cycript开启和关闭"></a>Cycript开启和关闭</h4><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-variable">Cycript</span><br><br><span class="hljs-variable">Cycript</span> <span class="hljs-operator">-</span><span class="hljs-variable">p</span> 进程<span class="hljs-variable">ID</span><span class="hljs-operator">/</span>进程名称<br><br><span class="hljs-type">#</span> 退出：<br><span class="hljs-variable">controle</span> <span class="hljs-operator">+</span> <span class="hljs-built_in">D</span><br><br>取消输入：<span class="hljs-variable">control</span> <span class="hljs-operator">+</span> <span class="hljs-built_in">C</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="获取进程名称-x2F-进程id"><a href="#获取进程名称-x2F-进程id" class="headerlink" title="获取进程名称&#x2F;进程id"></a>获取进程名称&#x2F;进程id</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment"># 获取所有进程</span><br><span class="hljs-built_in">ps</span> <span class="hljs-literal">-A</span><br><span class="hljs-built_in">ps</span> - A ｜ grep 关键词<br></code></pre></td></tr></table></figure>
+
+<h4 id="Cycript常用语法"><a href="#Cycript常用语法" class="headerlink" title="Cycript常用语法"></a>Cycript常用语法</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs stylus">UIApp UIApp 等价于<span class="hljs-selector-attr">[UIApplication sharedApplication]</span><br><br>定义变量 <span class="hljs-selector-tag">var</span> 变量名 = 变量值<br><br>用内存地址获取对象 #内存地址<br><br>已加载的所有OC类 ObjectiveC<span class="hljs-selector-class">.classes</span><br><br>查看对象的所有成员变量 *对象<br><br>递归打印View的所有子控件 对象<span class="hljs-selector-class">.recursiveDescription</span>()<span class="hljs-selector-class">.toString</span>()<br><br>筛选出某种类型的对象 <span class="hljs-built_in">choose</span>(UIViewController) <span class="hljs-built_in">choose</span>(UITableViewCell)<br></code></pre></td></tr></table></figure>
+
+<h4 id="Cycript高级使用"><a href="#Cycript高级使用" class="headerlink" title="Cycript高级使用"></a>Cycript高级使用</h4><p>我们可以将常用的Cycript代码封装在一个.cy文件中<br>导入XX.py @import XX</p>
 
                 
               </div>
@@ -325,6 +312,13 @@
   <a href="/categories/iOS/" class="category-chain-item">iOS</a>
   
   
+    <span>></span>
+    
+  <a href="/categories/iOS/%E9%80%86%E5%90%91/" class="category-chain-item">逆向</a>
+  
+  
+
+  
 
       </span>
     
@@ -339,6 +333,8 @@
       
         <a href="/tags/iOS/">#iOS</a>
       
+        <a href="/tags/%E9%80%86%E5%90%91/">#逆向</a>
+      
     </div>
   
 </div>
@@ -349,8 +345,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>浅谈iOS swift库 被依赖、被嵌套</div>
-      <div>http://example.com/2022/08/03/浅谈iOS库的依赖、嵌套/</div>
+      <div>Cycript的使用[逆向03]</div>
+      <div>http://qingleilo.cn/2022/08/22/Cycript的使用-逆向03/</div>
     </div>
     <div class="license-meta">
       
@@ -362,7 +358,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年8月3日</div>
+          <div>2022年8月22日</div>
         </div>
       
       
@@ -398,15 +394,21 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/08/03/iOS%E5%88%B6%E4%BD%9C%E7%A7%81%E6%9C%89%E5%BA%93/" title="iOS制作私有库">
+                      <a href="/2022/08/22/iOS%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E9%80%86%E5%90%9104/" title="iOS动态调试[逆向04]">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iOS制作私有库</span>
+                        <span class="hidden-mobile">iOS动态调试[逆向04]</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2022/08/22/ipa%E7%A0%B8%E5%A3%B3-%E9%80%86%E5%90%9102/" title="ipa砸壳[逆向02]">
+                        <span class="hidden-mobile">ipa砸壳[逆向02]</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>

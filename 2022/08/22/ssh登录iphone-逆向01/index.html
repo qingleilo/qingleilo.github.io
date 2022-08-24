@@ -16,22 +16,25 @@
   <meta name="author" content="FIRF">
   <meta name="keywords" content="">
   
-    <meta name="description" content="https:&#x2F;&#x2F;wallpaperhub.app&#x2F; https:&#x2F;&#x2F;wallhaven.cc&#x2F; https:&#x2F;&#x2F;unsplash.com&#x2F;">
+    <meta name="description" content="在iOS逆向工程中，经常需要通过命令行来对iphone下达指令。  iOS下有两个常用的账户：root、mobileroot:最高权限mobile:普通权限，只能操作一些普通文件iOS设备对外提供ssh服务的端口号是22iOS越狱设备通过Cydia安装OpenSSH工具  无线模式这种模式需要保证iOS设备和mac在同一局域网下 在mac终端输入$ssh 账户@ip地址 即可（初始密码：alpin">
 <meta property="og:type" content="article">
-<meta property="og:title" content="墙纸收藏">
-<meta property="og:url" content="http://qingleilo.cn/2022/08/20/%E5%A2%99%E7%BA%B8%E6%94%B6%E8%97%8F/index.html">
+<meta property="og:title" content="ssh登录iphone[逆向01]">
+<meta property="og:url" content="http://qingleilo.cn/2022/08/22/ssh%E7%99%BB%E5%BD%95iphone-%E9%80%86%E5%90%9101/index.html">
 <meta property="og:site_name" content="FIRF">
-<meta property="og:description" content="https:&#x2F;&#x2F;wallpaperhub.app&#x2F; https:&#x2F;&#x2F;wallhaven.cc&#x2F; https:&#x2F;&#x2F;unsplash.com&#x2F;">
+<meta property="og:description" content="在iOS逆向工程中，经常需要通过命令行来对iphone下达指令。  iOS下有两个常用的账户：root、mobileroot:最高权限mobile:普通权限，只能操作一些普通文件iOS设备对外提供ssh服务的端口号是22iOS越狱设备通过Cydia安装OpenSSH工具  无线模式这种模式需要保证iOS设备和mac在同一局域网下 在mac终端输入$ssh 账户@ip地址 即可（初始密码：alpin">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-08-20T03:01:29.000Z">
-<meta property="article:modified_time" content="2022-08-20T09:50:30.434Z">
+<meta property="og:image" content="http://qingleilo.cn/2022/08/22/ssh%E7%99%BB%E5%BD%95iphone-%E9%80%86%E5%90%9101/listen.png">
+<meta property="article:published_time" content="2022-08-22T01:58:00.000Z">
+<meta property="article:modified_time" content="2022-08-24T08:47:15.439Z">
 <meta property="article:author" content="FIRF">
-<meta property="article:tag" content="other">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="逆向">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://qingleilo.cn/2022/08/22/ssh%E7%99%BB%E5%BD%95iphone-%E9%80%86%E5%90%9101/listen.png">
   
   
   
-  <title>墙纸收藏 - FIRF</title>
+  <title>ssh登录iphone[逆向01] - FIRF</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -200,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="墙纸收藏"></span>
+            <span id="subtitle" data-typed-text="ssh登录iphone[逆向01]"></span>
           
         </div>
 
@@ -211,8 +214,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-08-20 11:01" pubdate>
-          2022年8月20日 上午
+        <time datetime="2022-08-22 09:58" pubdate>
+          2022年8月22日 上午
         </time>
       </span>
     
@@ -223,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          67 字
+          850 字
         
       </span>
     
@@ -234,7 +237,7 @@
         
         
         
-          1 分钟
+          8 分钟
         
       </span>
     
@@ -272,16 +275,35 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">墙纸收藏</h1>
+            <h1 style="display: none">ssh登录iphone[逆向01]</h1>
             
             
               <div class="markdown-body">
                 
-                <ul>
-<li><a target="_blank" rel="noopener" href="https://wallpaperhub.app/">https://wallpaperhub.app/</a></li>
-<li><a target="_blank" rel="noopener" href="https://wallhaven.cc/">https://wallhaven.cc/</a></li>
-<li><a target="_blank" rel="noopener" href="https://unsplash.com/">https://unsplash.com/</a></li>
-</ul>
+                <p>在iOS逆向工程中，经常需要通过命令行来对iphone下达指令。</p>
+<blockquote>
+<p>iOS下有两个常用的账户：root、mobile<br>root:最高权限<br>mobile:普通权限，只能操作一些普通文件<br>iOS设备对外提供ssh服务的端口号是22<br>iOS越狱设备通过Cydia安装OpenSSH工具</p>
+</blockquote>
+<h4 id="无线模式"><a href="#无线模式" class="headerlink" title="无线模式"></a>无线模式</h4><p>这种模式需要保证iOS设备和mac在同一局域网下</p>
+<p>在mac终端输入$ssh 账户@ip地址 即可（初始密码：alpine 后续修改密码等详见Cydia中[OpenSSH 访问教程]、[Root 密码教程]）</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">ssh</span> root@<span class="hljs-number">127.0.0.1</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="有线模式"><a href="#有线模式" class="headerlink" title="有线模式"></a>有线模式</h4><p>该种方式采用的是Mac上的一个服务程序usbmuxd(&#x2F;System&#x2F;Library&#x2F;PrivateFrameworks&#x2F;MobileDevice.framework&#x2F;Resources&#x2F;usbmuxd)</p>
+<p>原<a target="_blank" rel="noopener" href="https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz%E5%9C%A8macos">https://cgit.sukimashita.com/usbmuxd.git/snapshot/usbmuxd-1.0.8.tar.gz在macos</a> 12.3+ 上不适用 这里说另外一个iproxy</p>
+<h5 id="安装usbmuxd工具包"><a href="#安装usbmuxd工具包" class="headerlink" title="安装usbmuxd工具包"></a>安装usbmuxd工具包</h5><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">brew </span><span class="hljs-keyword">install </span>usbmuxd<br></code></pre></td></tr></table></figure>
+
+
+<h5 id="映射iphone22端口到mac并监听"><a href="#映射iphone22端口到mac并监听" class="headerlink" title="映射iphone22端口到mac并监听"></a>映射iphone22端口到mac并监听</h5><img src="listen.png" srcset="/img/loading.gif" lazyload width = "100%" />
+
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">iproxy</span> <span class="hljs-number">10010</span> <span class="hljs-number">22</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="登录iOS设备"><a href="#登录iOS设备" class="headerlink" title="登录iOS设备"></a>登录iOS设备</h5><p>不要关闭step2的窗口，command+T 另开个终端界面</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">ssh -p <span class="hljs-number">10010</span> root@localhost<br><span class="hljs-regexp">//</span>或<br><span class="hljs-regexp">//</span>ssh root@<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span> -p <span class="hljs-number">10010</span><br></code></pre></td></tr></table></figure>
+<h5 id="退出登录"><a href="#退出登录" class="headerlink" title="退出登录"></a>退出登录</h5><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-keyword">exit</span><br></code></pre></td></tr></table></figure>
+<h4 id="免密登陆"><a href="#免密登陆" class="headerlink" title="免密登陆"></a>免密登陆</h4><h5 id="创建密钥"><a href="#创建密钥" class="headerlink" title="创建密钥"></a>创建密钥</h5><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">ssh-keygen</span><br></code></pre></td></tr></table></figure>
+<h5 id="将生成的公钥追加到授权文件尾部（这里如果iOS-设备没有-ssh-文件夹，需要手动创建）"><a href="#将生成的公钥追加到授权文件尾部（这里如果iOS-设备没有-ssh-文件夹，需要手动创建）" class="headerlink" title="将生成的公钥追加到授权文件尾部（这里如果iOS 设备没有.ssh 文件夹，需要手动创建）"></a>将生成的公钥追加到授权文件尾部（这里如果iOS 设备没有.ssh 文件夹，需要手动创建）</h5><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">scp -P <span class="hljs-number">10010</span> ~<span class="hljs-regexp">/.ssh/id</span>_rsa.pub root<span class="hljs-variable">@localhost</span><span class="hljs-symbol">:~/</span>.ssh<br></code></pre></td></tr></table></figure>
+<h5 id="登录iOS设备执行"><a href="#登录iOS设备执行" class="headerlink" title="登录iOS设备执行"></a>登录iOS设备执行</h5><figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arcade">cat ~<span class="hljs-regexp">/.ssh/i</span>d_rsa.pub &gt;&gt; authorized_keys<br>rm  ~<span class="hljs-regexp">/.ssh/i</span>d_rsa.pub<br></code></pre></td></tr></table></figure>
+<p>退出设备再次登录就不需要密码了</p>
 
                 
               </div>
@@ -300,8 +322,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/other/" class="category-chain-item">other</a>
+  <a href="/categories/iOS/" class="category-chain-item">iOS</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/iOS/%E9%80%86%E5%90%91/" class="category-chain-item">逆向</a>
+  
+  
+
   
 
       </span>
@@ -315,7 +344,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/other/">#other</a>
+        <a href="/tags/iOS/">#iOS</a>
+      
+        <a href="/tags/%E9%80%86%E5%90%91/">#逆向</a>
       
     </div>
   
@@ -327,8 +358,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>墙纸收藏</div>
-      <div>http://qingleilo.cn/2022/08/20/墙纸收藏/</div>
+      <div>ssh登录iphone[逆向01]</div>
+      <div>http://qingleilo.cn/2022/08/22/ssh登录iphone-逆向01/</div>
     </div>
     <div class="license-meta">
       
@@ -340,7 +371,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年8月20日</div>
+          <div>2022年8月22日</div>
         </div>
       
       
@@ -376,9 +407,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/08/20/iOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E8%84%9A%E6%9C%AC/" title="iOS自动化打包脚本">
+                      <a href="/2022/08/22/ipa%E7%A0%B8%E5%A3%B3-%E9%80%86%E5%90%9102/" title="ipa砸壳[逆向02]">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iOS自动化打包脚本</span>
+                        <span class="hidden-mobile">ipa砸壳[逆向02]</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -386,8 +417,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/08/03/iOS%E5%88%B6%E4%BD%9C%E7%A7%81%E6%9C%89%E5%BA%93/" title="iOS制作私有库">
-                        <span class="hidden-mobile">iOS制作私有库</span>
+                      <a href="/2022/08/20/iOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E8%84%9A%E6%9C%AC/" title="iOS自动化打包脚本">
+                        <span class="hidden-mobile">iOS自动化打包脚本</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

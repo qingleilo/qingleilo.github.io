@@ -4,6 +4,39 @@
   
   
   <entry>
+    <title>Swift混编库的那些事儿</title>
+    <link href="/2022/09/16/Swift%E6%B7%B7%E7%BC%96%E5%BA%93%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/"/>
+    <url>/2022/09/16/Swift%E6%B7%B7%E7%BC%96%E5%BA%93%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/</url>
+    
+    <content type="html"><![CDATA[<h5 id="1、在swift-framwork中调用oc且不向外暴露"><a href="#1、在swift-framwork中调用oc且不向外暴露" class="headerlink" title="1、在swift framwork中调用oc且不向外暴露"></a>1、在swift framwork中调用oc且不向外暴露</h5><ul><li>使用module.modulemap文件</li><li><code>Build Setting</code> -&gt;<code>Swift Compile - Search Path</code> 中设置<code>module.modulemap</code>路径 <code>&quot;$(SRCROOT)/xxx&quot;</code></li></ul><h5 id="2、提供的oc、swift混编私有-framework是动态库"><a href="#2、提供的oc、swift混编私有-framework是动态库" class="headerlink" title="2、提供的oc、swift混编私有.framework是动态库"></a>2、提供的oc、swift混编私有.framework是动态库</h5><ul><li>设置 <code>Build Setting</code> -&gt;<code>Build Libraries for Distribution</code>为<code>YES</code> 实现不同版本编译器之间的兼容问题</li></ul><h5 id="3、提供的oc、swift混编私有-framework是静态库-且podspec中依赖Alamofire这样的第三方库"><a href="#3、提供的oc、swift混编私有-framework是静态库-且podspec中依赖Alamofire这样的第三方库" class="headerlink" title="3、提供的oc、swift混编私有.framework是静态库 且podspec中依赖Alamofire这样的第三方库"></a>3、提供的oc、swift混编私有.framework是静态库 且podspec中依赖<code>Alamofire</code>这样的第三方库</h5><ul><li>设置 <code>Build Setting</code> -&gt;<code>Build Libraries for Distribution</code>为<code>YES</code> 实现不同版本编译器之间的兼容问题</li><li>集成方需要在podfile 中加入 以下代码<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ruby">post_install <span class="hljs-keyword">do</span> |<span class="hljs-params">installer</span>|<br>  installer.pods_project.targets.each <span class="hljs-keyword">do</span> |<span class="hljs-params">target</span>|<br>   target.build_configurations.each <span class="hljs-keyword">do</span> |<span class="hljs-params">config</span>|<br>    config.build_settings[<span class="hljs-string">&#x27;BUILD_LIBRARY_FOR_DISTRIBUTION&#x27;</span>] = <span class="hljs-string">&#x27;YES&#x27;</span><br>   <span class="hljs-keyword">end</span><br>  <span class="hljs-keyword">end</span><br><span class="hljs-keyword">end</span><br></code></pre></td></tr></table></figure></li></ul><h5 id="4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错-1-Failed-to-build-module-39-SwiftOCDynamicSdk-39-this-SDK-is-not-supported-by-the-compiler-the-SDK-is-built-with-39-Apple-Swift-version-5-5-swiftlang-1300-0-31-1-clang-1300-0-29-1-39-while-this-compiler-is-39-Apple-Swift-version-5-7-swiftlang-5-7-0-127-4-clang-1400-0-29-50-39-Please-select-a-toolchain-which-matches-the-SDK-2-No-such-module-‘OCXXXModule’"><a href="#4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错-1-Failed-to-build-module-39-SwiftOCDynamicSdk-39-this-SDK-is-not-supported-by-the-compiler-the-SDK-is-built-with-39-Apple-Swift-version-5-5-swiftlang-1300-0-31-1-clang-1300-0-29-1-39-while-this-compiler-is-39-Apple-Swift-version-5-7-swiftlang-5-7-0-127-4-clang-1400-0-29-50-39-Please-select-a-toolchain-which-matches-the-SDK-2-No-such-module-‘OCXXXModule’" class="headerlink" title="4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错 1.Failed to build module &#39;SwiftOCDynamicSdk&#39;; this SDK is not supported by the compiler (the SDK is built with &#39;Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)&#39;, while this compiler is &#39;Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)&#39;). Please select a toolchain which matches the SDK. 2.No such module ‘OCXXXModule’"></a>4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错 1.<code>Failed to build module &#39;SwiftOCDynamicSdk&#39;; this SDK is not supported by the compiler (the SDK is built with &#39;Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)&#39;, while this compiler is &#39;Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)&#39;). Please select a toolchain which matches the SDK.</code> 2.No such module ‘OCXXXModule’</h5><p><strong>骚操作来了</strong></p><ul><li>在swift工程中创建一个<code>module.modulemap</code>文件，并申明一个报错缺失的module<br>示例：<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs ruby"><span class="hljs-comment">#这里</span><br><span class="hljs-keyword">module</span> OCXXXModule <br>&#123;<br>    export *<br>&#125;<br></code></pre></td></tr></table></figure></li><li><code>Build Setting</code> -&gt;<code>Swift Compile - Search Path</code> 中设置<code>module.modulemap</code>路径 <code>&quot;$(SRCROOT)/xxx&quot;</code></li></ul><h4 id="5、拓展-Swift组件内调用OC，调用-OC-的私有头文件"><a href="#5、拓展-Swift组件内调用OC，调用-OC-的私有头文件" class="headerlink" title="5、拓展: Swift组件内调用OC，调用 OC 的私有头文件"></a>5、拓展: Swift组件内调用OC，调用 OC 的私有头文件</h4><p>5.1 该swift组件需要以二进制方式被集成</p><ul><li>原理同4<br>5.2 该swift组件以源码方式</li><li>import该私有module</li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>iOS</category>
+      
+      <category>Swift</category>
+      
+      <category>Framework</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>iOS</tag>
+      
+      <tag>Swift</tag>
+      
+      <tag>Framework</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>iOS动态调试[逆向04]</title>
     <link href="/2022/08/22/iOS%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E9%80%86%E5%90%9104/"/>
     <url>/2022/08/22/iOS%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E9%80%86%E5%90%9104/</url>

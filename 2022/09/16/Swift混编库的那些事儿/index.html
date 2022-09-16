@@ -16,23 +16,24 @@
   <meta name="author" content="FIRF">
   <meta name="keywords" content="">
   
-    <meta name="description" content="LLDB最老版本的Xcode的调试器是GDB后来苹果就在这基础上开发了LLDB现在LLDB都是内嵌在Xcode中 Xcode的调试原理当我们在手机上连接Xcode进行真机调试的时候,Xcode识别手机后会将debug server安装到我们的手机上 (&#x2F;Developer&#x2F;usr&#x2F;bin&#x2F;debugserver)  debugserver一开始是放在mac的">
+    <meta name="description" content="1、在swift framwork中调用oc且不向外暴露 使用module.modulemap文件 Build Setting -&gt;Swift Compile - Search Path 中设置module.modulemap路径 &quot;$(SRCROOT)&#x2F;xxx&quot;  2、提供的oc、swift混编私有.framework是动态库 设置 Build Setting -&amp;gt">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS动态调试[逆向04]">
-<meta property="og:url" content="http://qingleilo.cn/2022/08/22/iOS%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E9%80%86%E5%90%9104/index.html">
+<meta property="og:title" content="Swift混编库的那些事儿">
+<meta property="og:url" content="http://qingleilo.cn/2022/09/16/Swift%E6%B7%B7%E7%BC%96%E5%BA%93%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/index.html">
 <meta property="og:site_name" content="FIRF">
-<meta property="og:description" content="LLDB最老版本的Xcode的调试器是GDB后来苹果就在这基础上开发了LLDB现在LLDB都是内嵌在Xcode中 Xcode的调试原理当我们在手机上连接Xcode进行真机调试的时候,Xcode识别手机后会将debug server安装到我们的手机上 (&#x2F;Developer&#x2F;usr&#x2F;bin&#x2F;debugserver)  debugserver一开始是放在mac的">
+<meta property="og:description" content="1、在swift framwork中调用oc且不向外暴露 使用module.modulemap文件 Build Setting -&gt;Swift Compile - Search Path 中设置module.modulemap路径 &quot;$(SRCROOT)&#x2F;xxx&quot;  2、提供的oc、swift混编私有.framework是动态库 设置 Build Setting -&amp;gt">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-08-22T02:33:21.000Z">
-<meta property="article:modified_time" content="2022-08-24T08:47:15.437Z">
+<meta property="article:published_time" content="2022-09-16T05:50:38.000Z">
+<meta property="article:modified_time" content="2022-09-16T08:07:22.931Z">
 <meta property="article:author" content="FIRF">
 <meta property="article:tag" content="iOS">
-<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="Swift">
+<meta property="article:tag" content="Framework">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>iOS动态调试[逆向04] - FIRF</title>
+  <title>Swift混编库的那些事儿 - FIRF</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iOS动态调试[逆向04]"></span>
+            <span id="subtitle" data-typed-text="Swift混编库的那些事儿"></span>
           
         </div>
 
@@ -212,8 +213,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-08-22 10:33" pubdate>
-          2022年8月22日 上午
+        <time datetime="2022-09-16 13:50" pubdate>
+          2022年9月16日 下午
         </time>
       </span>
     
@@ -224,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          1.2k 字
         
       </span>
     
@@ -235,7 +236,7 @@
         
         
         
-          15 分钟
+          11 分钟
         
       </span>
     
@@ -273,34 +274,32 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">iOS动态调试[逆向04]</h1>
+            <h1 style="display: none">Swift混编库的那些事儿</h1>
             
             
               <div class="markdown-body">
                 
-                <h4 id="LLDB"><a href="#LLDB" class="headerlink" title="LLDB"></a>LLDB</h4><p>最老版本的Xcode的调试器是GDB后来苹果就在这基础上开发了LLDB<br>现在LLDB都是内嵌在Xcode中</p>
-<h4 id="Xcode的调试原理"><a href="#Xcode的调试原理" class="headerlink" title="Xcode的调试原理"></a>Xcode的调试原理</h4><p>当我们在手机上连接Xcode进行真机调试的时候,Xcode识别手机后会将debug server安装到我们的手机上 (&#x2F;Developer&#x2F;usr&#x2F;bin&#x2F;debugserver)</p>
-<blockquote>
-<p>debugserver一开始是放在mac的Xcode中的<code>/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport/9.0/DeveloperDiskImage.dmg/usr/bin/debugserver</code><br>当我们进入某个断点时,手机上的<code>debugsever</code>会监听<code>lldb</code>传过来的指令<br><code>debugserver</code>接收到指定的时候,再执行到我们的App上<br>接着App再把反馈信息传递给<code>debugserver</code> 然后<code>debugserver</code>再把消息反馈给<code>lldb</code>，<code>lldb</code>在把调试信息打印在Xcode上。</p>
-</blockquote>
-<p>Xcode调试具有局限性，只能调试通过Xcode安装的App</p>
-<h4 id="动态调试任意App"><a href="#动态调试任意App" class="headerlink" title="动态调试任意App"></a>动态调试任意App</h4><p>通过上述Xcode的调试原理要想调试App debugserver、lldb这两个必不可少 因为没有源码 我们只能在终端上代替上面的Xcode</p>
-<h5 id="step1"><a href="#step1" class="headerlink" title="step1."></a>step1.</h5><p>Xcode自动给我们按照的debugserver肯定是用不了了,因为权限不够。所以我们需要给他签上权限</p>
-<p>从手机上拖出debugserver（&#x2F;Developer&#x2F;usr&#x2F;bin&#x2F;debugserver）<br>重签名 – 将下列保存成entitlement.entitlements放在debugserver同级文件夹（其实就 是个xml文件 后缀名不重要）</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">plist</span> <span class="hljs-keyword">PUBLIC</span> <span class="hljs-string">&quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>   <span class="hljs-string">&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;</span>&gt;</span> <br><span class="hljs-tag">&lt;<span class="hljs-name">plist</span> <span class="hljs-attr">version</span>=<span class="hljs-string">&quot;1.0&quot;</span>&gt;</span> <br><span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>com.apple.springboard.debugapplications<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">true</span>/&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>get-task-allow<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">true</span>/&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>task_for_pid-allow<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">true</span>/&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>run-unsigned-code<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span> <br> <span class="hljs-tag">&lt;<span class="hljs-name">true</span>/&gt;</span> <br><span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span> <br><span class="hljs-tag">&lt;/<span class="hljs-name">plist</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<p>使用<code>codesign</code>重签名<code>codesign -s – –entitlements ./entitlement.entitlements -f debugserver</code><br>将签名完成的<code>debugserver</code>放入手机<code>usr/bin</code>目录下<br>并给权限</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">chomod +x <span class="hljs-regexp">/usr/</span>bin/debugserver<br></code></pre></td></tr></table></figure>
-<p>这里不是之前替换原来的<code>debugserver</code> ,因为那个目录是只读的没有权限所以放在<code>/usr/bin/</code>下面</p>
-<h5 id="step2"><a href="#step2" class="headerlink" title="step2."></a>step2.</h5><p>手机需要和mac做连接 详见SSH登录</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">python</span> /Users/apple/Desktop/jailbreak/usbmuxd/tcprelay.py -t <span class="hljs-number">22</span>:<span class="hljs-number">10010</span> <span class="hljs-number">10011</span>:<span class="hljs-number">10011</span>(让手机的<span class="hljs-number">22</span>、<span class="hljs-number">10011</span>端口映射到本地的<span class="hljs-number">10010</span>、<span class="hljs-number">10011</span>端口)<br></code></pre></td></tr></table></figure>
-<p>登录手机</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">ssh</span> root<span class="hljs-variable">@localhost</span> -p <span class="hljs-number">10010</span><br></code></pre></td></tr></table></figure>
-<p>监听进程</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">debugserver</span> *:<span class="hljs-number">10011</span> -a 【进程名】<br></code></pre></td></tr></table></figure>
-<p>接下来就可以在mac终端进入lldb 进入调试模式 （和在xcode上敲lldb指令一样）</p>
-<h4 id="debugserver-启动App"><a href="#debugserver-启动App" class="headerlink" title="debugserver 启动App"></a>debugserver 启动App</h4><p>可观察App是如何启动的</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">debugserver  -x <span class="hljs-built_in">auto</span> *:端口号 App的可执行文件路径 <br><br></code></pre></td></tr></table></figure>
-
+                <h5 id="1、在swift-framwork中调用oc且不向外暴露"><a href="#1、在swift-framwork中调用oc且不向外暴露" class="headerlink" title="1、在swift framwork中调用oc且不向外暴露"></a>1、在swift framwork中调用oc且不向外暴露</h5><ul>
+<li>使用module.modulemap文件</li>
+<li><code>Build Setting</code> -&gt;<code>Swift Compile - Search Path</code> 中设置<code>module.modulemap</code>路径 <code>&quot;$(SRCROOT)/xxx&quot;</code></li>
+</ul>
+<h5 id="2、提供的oc、swift混编私有-framework是动态库"><a href="#2、提供的oc、swift混编私有-framework是动态库" class="headerlink" title="2、提供的oc、swift混编私有.framework是动态库"></a>2、提供的oc、swift混编私有.framework是动态库</h5><ul>
+<li>设置 <code>Build Setting</code> -&gt;<code>Build Libraries for Distribution</code>为<code>YES</code> 实现不同版本编译器之间的兼容问题</li>
+</ul>
+<h5 id="3、提供的oc、swift混编私有-framework是静态库-且podspec中依赖Alamofire这样的第三方库"><a href="#3、提供的oc、swift混编私有-framework是静态库-且podspec中依赖Alamofire这样的第三方库" class="headerlink" title="3、提供的oc、swift混编私有.framework是静态库 且podspec中依赖Alamofire这样的第三方库"></a>3、提供的oc、swift混编私有.framework是静态库 且podspec中依赖<code>Alamofire</code>这样的第三方库</h5><ul>
+<li>设置 <code>Build Setting</code> -&gt;<code>Build Libraries for Distribution</code>为<code>YES</code> 实现不同版本编译器之间的兼容问题</li>
+<li>集成方需要在podfile 中加入 以下代码<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ruby">post_install <span class="hljs-keyword">do</span> |<span class="hljs-params">installer</span>|<br>  installer.pods_project.targets.each <span class="hljs-keyword">do</span> |<span class="hljs-params">target</span>|<br>   target.build_configurations.each <span class="hljs-keyword">do</span> |<span class="hljs-params">config</span>|<br>    config.build_settings[<span class="hljs-string">&#x27;BUILD_LIBRARY_FOR_DISTRIBUTION&#x27;</span>] = <span class="hljs-string">&#x27;YES&#x27;</span><br>   <span class="hljs-keyword">end</span><br>  <span class="hljs-keyword">end</span><br><span class="hljs-keyword">end</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错-1-Failed-to-build-module-39-SwiftOCDynamicSdk-39-this-SDK-is-not-supported-by-the-compiler-the-SDK-is-built-with-39-Apple-Swift-version-5-5-swiftlang-1300-0-31-1-clang-1300-0-29-1-39-while-this-compiler-is-39-Apple-Swift-version-5-7-swiftlang-5-7-0-127-4-clang-1400-0-29-50-39-Please-select-a-toolchain-which-matches-the-SDK-2-No-such-module-‘OCXXXModule’"><a href="#4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错-1-Failed-to-build-module-39-SwiftOCDynamicSdk-39-this-SDK-is-not-supported-by-the-compiler-the-SDK-is-built-with-39-Apple-Swift-version-5-5-swiftlang-1300-0-31-1-clang-1300-0-29-1-39-while-this-compiler-is-39-Apple-Swift-version-5-7-swiftlang-5-7-0-127-4-clang-1400-0-29-50-39-Please-select-a-toolchain-which-matches-the-SDK-2-No-such-module-‘OCXXXModule’" class="headerlink" title="4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错 1.Failed to build module &#39;SwiftOCDynamicSdk&#39;; this SDK is not supported by the compiler (the SDK is built with &#39;Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)&#39;, while this compiler is &#39;Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)&#39;). Please select a toolchain which matches the SDK. 2.No such module ‘OCXXXModule’"></a>4、经过1的操作发现oc工程可以集成成功，swift工程中集成报了2个错 1.<code>Failed to build module &#39;SwiftOCDynamicSdk&#39;; this SDK is not supported by the compiler (the SDK is built with &#39;Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)&#39;, while this compiler is &#39;Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)&#39;). Please select a toolchain which matches the SDK.</code> 2.No such module ‘OCXXXModule’</h5><p><strong>骚操作来了</strong></p>
+<ul>
+<li>在swift工程中创建一个<code>module.modulemap</code>文件，并申明一个报错缺失的module<br>示例：<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs ruby"><span class="hljs-comment">#这里</span><br><span class="hljs-keyword">module</span> OCXXXModule <br>&#123;<br>    export *<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><code>Build Setting</code> -&gt;<code>Swift Compile - Search Path</code> 中设置<code>module.modulemap</code>路径 <code>&quot;$(SRCROOT)/xxx&quot;</code></li>
+</ul>
+<h4 id="5、拓展-Swift组件内调用OC，调用-OC-的私有头文件"><a href="#5、拓展-Swift组件内调用OC，调用-OC-的私有头文件" class="headerlink" title="5、拓展: Swift组件内调用OC，调用 OC 的私有头文件"></a>5、拓展: Swift组件内调用OC，调用 OC 的私有头文件</h4><p>5.1 该swift组件需要以二进制方式被集成</p>
+<ul>
+<li>原理同4<br>5.2 该swift组件以源码方式</li>
+<li>import该私有module</li>
+</ul>
 
                 
               </div>
@@ -324,8 +323,15 @@
   
     <span>></span>
     
-  <a href="/categories/iOS/%E9%80%86%E5%90%91/" class="category-chain-item">逆向</a>
+  <a href="/categories/iOS/Swift/" class="category-chain-item">Swift</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/iOS/Swift/Framework/" class="category-chain-item">Framework</a>
+  
+  
+
   
 
   
@@ -343,7 +349,9 @@
       
         <a href="/tags/iOS/">#iOS</a>
       
-        <a href="/tags/%E9%80%86%E5%90%91/">#逆向</a>
+        <a href="/tags/Swift/">#Swift</a>
+      
+        <a href="/tags/Framework/">#Framework</a>
       
     </div>
   
@@ -355,8 +363,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iOS动态调试[逆向04]</div>
-      <div>http://qingleilo.cn/2022/08/22/iOS动态调试-逆向04/</div>
+      <div>Swift混编库的那些事儿</div>
+      <div>http://qingleilo.cn/2022/09/16/Swift混编库的那些事儿/</div>
     </div>
     <div class="license-meta">
       
@@ -368,7 +376,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年8月22日</div>
+          <div>2022年9月16日</div>
         </div>
       
       
@@ -404,18 +412,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/16/Swift%E6%B7%B7%E7%BC%96%E5%BA%93%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/" title="Swift混编库的那些事儿">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Swift混编库的那些事儿</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/08/22/Cycript%E7%9A%84%E4%BD%BF%E7%94%A8-%E9%80%86%E5%90%9103/" title="Cycript的使用[逆向03]">
-                        <span class="hidden-mobile">Cycript的使用[逆向03]</span>
+                      <a href="/2022/08/22/iOS%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E9%80%86%E5%90%9104/" title="iOS动态调试[逆向04]">
+                        <span class="hidden-mobile">iOS动态调试[逆向04]</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

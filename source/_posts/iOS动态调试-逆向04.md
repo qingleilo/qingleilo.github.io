@@ -66,14 +66,21 @@ ssh root@localhost -p 10010
 ```
 监听进程
 ```
+#debugserver 附加到进程 并开启10011端口 等待所有的地址来连接
 debugserver *:10011 -a 【进程名】
-```
-接下来就可以在mac终端进入lldb 进入调试模式 （和在xcode上敲lldb指令一样）
 
+```
+##### step3.
+debugserver 启动成功后就可以在macOs上连接了，在终端输入`lldb`进入lldb环境，
+```
+#由于上面的映射，直接连接本地的10011端口
+process connect connect://localhost:10011
+```
 #### debugserver 启动App
 可观察App是如何启动的
 ```
 debugserver  -x auto *:端口号 App的可执行文件路径 
-
+//或者
+debugserver -x backboard *:10011 /路径x/x/xx/xx.app/xx
 ```
 

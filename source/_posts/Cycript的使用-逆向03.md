@@ -60,4 +60,5 @@ UIApp UIApp 等价于[UIApplication sharedApplication]
 #### Cycript高级使用
 
 我们可以将常用的Cycript代码封装在一个.cy文件中
-导入XX.py @import XX
+然后将.cy文件拖进手机`/usr/lib/cycript0.9`路径下
+使用时 导入XX.py @import XX
